@@ -247,7 +247,7 @@ const Navbar = ({ openModal, onPricing }: { openModal: (t: ModalType) => void; o
   );
 };
 
-const Hero = ({ openModal }: { openModal: (t: ModalType) => void }) => (
+const Hero = ({ openModal, onPricing }: { openModal: (t: ModalType) => void; onPricing: () => void }) => (
   <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-20 overflow-hidden">
     <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full animate-float"></div>
     <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-purple-600/10 blur-[100px] rounded-full animate-float" style={{animationDelay: '-3s'}}></div>
@@ -287,6 +287,12 @@ const Hero = ({ openModal }: { openModal: (t: ModalType) => void }) => (
           Être accompagné
         </button>
       </div>
+      <button
+        onClick={onPricing}
+        className="mt-5 text-emerald-400 hover:text-emerald-300 transition-colors text-sm font-semibold underline underline-offset-4"
+      >
+        Voir les tarifs →
+      </button>
     </div>
 
     <a href="#approche" className="absolute bottom-10 left-1/2 -translate-x-1/2 text-slate-500 hover:text-white transition-colors animate-bounce">
@@ -830,7 +836,7 @@ export default function App() {
     <div className="min-h-screen">
       <ContactModal type={modal} onClose={closeModal} />
       <Navbar openModal={openModal} onPricing={() => setPage('pricing')} />
-      <Hero openModal={openModal} />
+      <Hero openModal={openModal} onPricing={() => setPage('pricing')} />
       <Philosophy />
       <Path openModal={openModal} />
       <CoachSection />
