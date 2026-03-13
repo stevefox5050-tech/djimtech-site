@@ -402,15 +402,19 @@ const Path = ({ openModal }: { openModal: (t: ModalType) => void }) => (
       <div className="relative">
         <PathLevel
           num={1}
-          title="Maîtrise des Chatbots"
-          obj="Rendre l'utilisateur autonome et stratégique dans l'usage des chatbots IA."
+          title="Maîtrise des Chatbots et Assistants IA"
+          obj="Rendre l'utilisateur autonome et stratégique dans l'usage des chatbots IA — adapté à tous les secteurs."
           items={[
             "Comprendre comment fonctionnent les LLMs",
             "Apprendre à bien formuler ses prompts",
             "Choisir le bon outil selon le besoin",
-            "Utiliser les chatbots dans un cadre pro"
+            "Utiliser les chatbots dans un cadre pro",
+            "Générer des affiches publicitaires avec l'IA",
+            "Créer des vidéos et contenus avec l'IA",
+            "Maîtriser les outils audio, vidéo et photo IA",
+            "Utiliser les outils de RAG pour ses données"
           ]}
-          tools={["ChatGPT 5.2", "Claude", "Djimini", "DeepSeek", "Kimik A2"]}
+          tools={["ChatGPT", "Claude", "Gemini", "Notebook LM", "DeepSeek", "Kimi", "Outils RAG", "Audio / Vidéo / Photo"]}
           cta="Se former aux chatbots IA"
           color="from-emerald-400 to-teal-500"
           glow="border-emerald-500 glow-emerald"
@@ -418,14 +422,16 @@ const Path = ({ openModal }: { openModal: (t: ModalType) => void }) => (
         />
         <PathLevel
           num={2}
-          title="Agents IA & Automatisation"
+          title="Agents IA & Automatisations"
           obj="Passer du simple chat à des systèmes IA autonomes et actionnables."
           items={[
             "Différence entre chatbot et agent IA",
             "Conception d'agents orientés objectifs",
-            "Automatisation via no-code / low-code",
+            "Automatisation via Make & N8N",
             "Agents connectés (Navigateurs, APIs)",
-            "Logique multi-agents et workflows"
+            "Logique multi-agents et workflows",
+            "Création d'agents sur mesure",
+            "Outils agentiques : Antigravity, Claude Cowork, Manus AI, Genspark et autres"
           ]}
           cta="Mettre en place des agents IA"
           color="from-blue-500 to-indigo-600"
@@ -434,13 +440,15 @@ const Path = ({ openModal }: { openModal: (t: ModalType) => void }) => (
         />
         <PathLevel
           num={3}
-          title="Vibe Coding & Agents"
+          title="Vibe Coding & Agentic"
           obj="Créer, coder et prototyper plus vite avec les agents IA."
           items={[
-            "Comprendre le vibe coding",
+            "Le Vibe Coding : développer sans coder",
+            "Le Vibe Prospecting : prospecter avec l'IA",
+            "Le Vibe Editing : créer et éditer du contenu IA",
+            "Le Vibe Marketing : automatiser sa stratégie marketing",
+            "Le Vibe Agents : orchestrer ses agents au quotidien",
             "Collaboration humain–agent",
-            "Développement assisté par agents",
-            "Prototypage rapide",
             "Accompagnement profils tech/non-tech"
           ]}
           cta="Apprendre le vibe coding"
@@ -552,7 +560,7 @@ const WhyUs = () => {
   );
 };
 
-const FinalCTA = ({ openModal }: { openModal: (t: ModalType) => void }) => (
+const FinalCTA = ({ openModal, onPricing }: { openModal: (t: ModalType) => void; onPricing: () => void }) => (
   <section className="py-40 px-6 relative overflow-hidden bg-gradient-to-b from-transparent to-emerald-950/10">
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-600/5 blur-[160px] rounded-full"></div>
     <div className="max-w-5xl mx-auto text-center relative z-10">
@@ -581,7 +589,16 @@ const FinalCTA = ({ openModal }: { openModal: (t: ModalType) => void }) => (
         </button>
       </div>
 
-      <div className="mt-8 flex justify-center">
+      {/* Lien Tarifs */}
+      <div className="mt-8 flex flex-col items-center gap-4">
+        <button
+          onClick={onPricing}
+          className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl border border-emerald-500/30 text-emerald-400 font-extrabold text-lg hover:bg-emerald-500/10 hover:border-emerald-400 transition-all"
+        >
+          <Sparkles className="w-5 h-5" />
+          Voir les Tarifs
+          <ArrowRight className="w-5 h-5" />
+        </button>
         <a
           href="https://wa.me/221775218762"
           target="_blank"
@@ -631,36 +648,48 @@ const pricingAxes = [
   {
     id: 'chatbots',
     icon: '🤖',
-    title: 'Chatbots IA',
+    title: 'Chatbots & Assistants IA',
     color: 'from-emerald-500 to-teal-500',
     border: 'border-emerald-500/30',
     glow: 'bg-emerald-500/5',
     individual: '30 000 FCFA',
-    group: '80 000 FCFA',
-    description: 'Créer, déployer et gérer des chatbots IA pour automatiser votre communication.',
+    group: '125 000 FCFA',
+    hourly: [
+      { hours: 2, price: '10 000 FCFA' },
+      { hours: 3, price: '15 000 FCFA' },
+    ],
+    description: 'Maîtriser ChatGPT, Claude, Gemini, les outils RAG, audio, vidéo, photo IA — adapté à tous les secteurs.',
   },
   {
     id: 'agents',
     icon: '🧠',
-    title: 'Agents IA',
+    title: 'Agents IA & Automatisations',
     color: 'from-blue-500 to-purple-500',
     border: 'border-blue-500/30',
     glow: 'bg-blue-500/5',
     individual: '50 000 – 80 000 FCFA',
-    group: '120 000 FCFA',
-    description: 'Concevoir des agents intelligents pour automatiser vos processus métier.',
+    group: '150 000 FCFA',
+    hourly: [
+      { hours: 2, price: '20 000 FCFA' },
+      { hours: 3, price: '25 000 FCFA' },
+    ],
+    description: 'Make, N8N, agents sur mesure, outils agentiques (Antigravity, Claude Cowork, Manus AI, Genspark…)',
     popular: true,
   },
   {
     id: 'vibe',
     icon: '💻',
-    title: 'Vibe Coding',
+    title: 'Vibe Coding & Agentic',
     color: 'from-purple-500 to-pink-500',
     border: 'border-purple-500/30',
     glow: 'bg-purple-500/5',
     individual: '50 000 – 80 000 FCFA',
-    group: '120 000 FCFA',
-    description: 'Créer des applications sans être développeur grâce à l\'IA.',
+    group: '150 000 FCFA',
+    hourly: [
+      { hours: 2, price: '20 000 FCFA' },
+      { hours: 3, price: '25 000 FCFA' },
+    ],
+    description: 'Vibe Coding, Vibe Prospecting, Vibe Editing, Vibe Marketing, Vibe Agents — créer sans coder avec l\'IA.',
   },
 ];
 
@@ -731,13 +760,29 @@ const PricingPage = ({ onBack, openModal }: { onBack: () => void; openModal: (t:
             </div>
 
             {/* Groupe */}
-            <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/10">
+            <div className="mb-4 p-4 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
                 <GraduationCap className="w-4 h-4 text-slate-400" />
                 <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Groupe 5 pers. / mois</span>
               </div>
               <div className={`text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${ax.color}`}>
                 {ax.group}
+              </div>
+            </div>
+
+            {/* Tarifs à l'heure */}
+            <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="flex items-center gap-2 mb-3">
+                <Calendar className="w-4 h-4 text-slate-400" />
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Séances ponctuelles</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                {(ax as any).hourly?.map((h: { hours: number; price: string }) => (
+                  <div key={h.hours} className="flex items-center justify-between">
+                    <span className="text-xs text-slate-400 font-medium">{h.hours}h de formation</span>
+                    <span className={`text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${ax.color}`}>{h.price}</span>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -842,7 +887,7 @@ export default function App() {
       <CoachSection />
       <Publics />
       <WhyUs />
-      <FinalCTA openModal={openModal} />
+      <FinalCTA openModal={openModal} onPricing={() => setPage('pricing')} />
       <Footer openModal={openModal} />
     </div>
   );
