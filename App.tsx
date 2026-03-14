@@ -29,7 +29,22 @@ const WhatsAppIcon = () => (
 // ⚠️ Remplace par ton endpoint Formspree : https://formspree.io/f/XXXXXXXX
 const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xyknjbda';
 
+const WHATSAPP_URL = 'https://wa.me/221775218762';
+const YOUTUBE_URL = 'https://www.youtube.com/@djimtechdjimiadotevi1166';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/djimi-adotevi';
+
 type ModalType = 'Rendez-vous' | 'Formation' | 'Accompagnement' | null;
+
+interface HourlySlot { hours: number; price: string; }
+interface PricingAxis {
+  id: string; icon: string; title: string; color: string;
+  border: string; glow: string; individual: string; group: string;
+  hourly: HourlySlot[]; description: string; popular?: boolean;
+}
+interface PathLevelProps {
+  num: number; title: string; obj: string; items: string[];
+  tools?: string[]; cta: string; color: string; glow: string; onCta: () => void;
+}
 
 // --- Modal de contact ---
 
@@ -60,7 +75,7 @@ const modalConfig = {
   },
 };
 
-const ContactModal = ({ type, onClose }: { type: ModalType; onClose: () => void }) => {
+const ContactModal = React.memo(({ type, onClose }: { type: ModalType; onClose: () => void }) => {
   const [nom, setNom] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -76,7 +91,7 @@ const ContactModal = ({ type, onClose }: { type: ModalType; onClose: () => void 
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, [onClose]); // onClose is stable via useCallback in App
 
   if (!type) return null;
 
@@ -203,7 +218,7 @@ const ContactModal = ({ type, onClose }: { type: ModalType; onClose: () => void 
       `}</style>
     </div>
   );
-};
+});
 
 // --- Components ---
 
@@ -301,14 +316,14 @@ const Hero = ({ openModal, onPricing }: { openModal: (t: ModalType) => void; onP
   </section>
 );
 
-const Philosophy = () => {
-  const points = [
-    { title: "Approche progressive", desc: "Du simple au complexe pour une montée en puissance maîtrisée.", icon: <Layers className="text-emerald-400" /> },
-    { title: "Orientation autonomie", desc: "Comprendre avant d'utiliser. Devenir souverain face à l'outil.", icon: <ShieldCheck className="text-blue-400" /> },
-    { title: "Coaching + Formation", desc: "La transmission théorique alliée à l'accompagnement personnalisé.", icon: <GraduationCap className="text-purple-400" /> },
-    { title: "Pratique réelle", desc: "Apprentissage par la pratique sur vos cas d'usage concrets.", icon: <Cpu className="text-pink-400" /> }
-  ];
+const philosophyPoints = [
+  { title: "Approche progressive", desc: "Du simple au complexe pour une montée en puissance maîtrisée.", icon: <Layers className="text-emerald-400" /> },
+  { title: "Orientation autonomie", desc: "Comprendre avant d'utiliser. Devenir souverain face à l'outil.", icon: <ShieldCheck className="text-blue-400" /> },
+  { title: "Coaching + Formation", desc: "La transmission théorique alliée à l'accompagnement personnalisé.", icon: <GraduationCap className="text-purple-400" /> },
+  { title: "Pratique réelle", desc: "Apprentissage par la pratique sur vos cas d'usage concrets.", icon: <Cpu className="text-pink-400" /> },
+];
 
+const Philosophy = () => {
   return (
     <section id="approche" className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
@@ -318,7 +333,7 @@ const Philosophy = () => {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {points.map((p, i) => (
+          {philosophyPoints.map((p, i) => (
             <div key={i} className="glass-card p-10 rounded-[2.5rem] hover:border-white/20 transition-all duration-500 group">
               <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform">{p.icon}</div>
               <h3 className="text-xl font-bold mb-4 font-outfit">{p.title}</h3>
@@ -331,7 +346,7 @@ const Philosophy = () => {
   );
 };
 
-const PathLevel = ({ num, title, obj, items, tools, cta, color, glow, onCta }: any) => (
+const PathLevel = ({ num, title, obj, items, tools, cta, color, glow, onCta }: PathLevelProps) => (
   <div className="relative pl-12 md:pl-0 md:grid md:grid-cols-2 md:gap-24 mb-32 last:mb-0 group">
     <div className="absolute left-0 md:left-1/2 top-0 bottom-0 md:-translate-x-1/2 flex flex-col items-center">
       <div className={`w-12 h-12 rounded-full border-4 border-[#020617] bg-gradient-to-br ${color} z-10 flex items-center justify-center font-black text-xl shadow-xl group-hover:scale-110 transition-transform`}>
@@ -378,7 +393,7 @@ const PathLevel = ({ num, title, obj, items, tools, cta, color, glow, onCta }: a
           <ArrowRight className="w-4 h-4" />
         </button>
         <a
-          href="https://wa.me/221775218762"
+          href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="px-6 py-4 rounded-xl font-extrabold text-sm transition-all flex items-center gap-3 border border-green-500/20 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600"
@@ -472,15 +487,15 @@ const CoachSection = () => (
             <h3 className="text-4xl font-black font-outfit uppercase">Djimi Adotevi</h3>
             <p className="text-emerald-400 font-bold tracking-widest uppercase text-sm mt-2">Coach & Formateur en IA</p>
             <div className="flex gap-3 mt-4">
-              <a href="https://www.youtube.com/@djimtechdjimiadotevi1166" target="_blank" rel="noopener noreferrer"
+              <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-red-600 transition-colors text-white">
                 <Youtube className="w-4 h-4" />
               </a>
-              <a href="https://www.linkedin.com/in/djimi-adotevi" target="_blank" rel="noopener noreferrer"
+              <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-blue-600 transition-colors text-white">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://wa.me/221775218762" target="_blank" rel="noopener noreferrer"
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
                 className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/10 hover:bg-green-600 transition-colors text-white">
                 <WhatsAppIcon />
               </a>
@@ -530,14 +545,14 @@ const Publics = () => {
   );
 };
 
-const WhyUs = () => {
-  const reasons = [
-    { t: "Progression claire", d: "En 3 niveaux structurés pour ne jamais se sentir perdu." },
-    { t: "Vision globale", d: "De l'outil au système, puis à la création pure." },
-    { t: "Usage réel", d: "Orientation sur l'application concrète en milieu pro." },
-    { t: "Pédagogique", d: "Une approche structurée pensée pour l'assimilation." }
-  ];
+const whyUsReasons = [
+  { t: "Progression claire", d: "En 3 niveaux structurés pour ne jamais se sentir perdu." },
+  { t: "Vision globale", d: "De l'outil au système, puis à la création pure." },
+  { t: "Usage réel", d: "Orientation sur l'application concrète en milieu pro." },
+  { t: "Pédagogique", d: "Une approche structurée pensée pour l'assimilation." },
+];
 
+const WhyUs = () => {
   return (
     <section className="py-32 px-6">
       <div className="max-w-7xl mx-auto">
@@ -545,7 +560,7 @@ const WhyUs = () => {
           <h2 className="text-4xl md:text-5xl font-black mb-6 font-outfit">POURQUOI CETTE APPROCHE ?</h2>
         </div>
         <div className="grid md:grid-cols-2 gap-8">
-          {reasons.map((r, i) => (
+          {whyUsReasons.map((r, i) => (
             <div key={i} className="flex gap-6 p-8 glass-card rounded-3xl">
               <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center font-black text-blue-400 shrink-0">{i+1}</div>
               <div>
@@ -600,7 +615,7 @@ const FinalCTA = ({ openModal, onPricing }: { openModal: (t: ModalType) => void;
           <ArrowRight className="w-5 h-5" />
         </button>
         <a
-          href="https://wa.me/221775218762"
+          href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-3 px-8 py-4 rounded-2xl border border-green-500/30 text-green-400 font-bold hover:bg-green-600 hover:text-white hover:border-green-600 transition-all"
@@ -621,18 +636,18 @@ const Footer = ({ openModal }: { openModal: (t: ModalType) => void }) => (
         <span className="text-lg font-black font-outfit uppercase">Djimtech</span>
       </div>
       <div className="text-slate-500 text-sm font-medium">
-        © 2025 Djimtech. Expert Coach & Formateur IA.
+        © {new Date().getFullYear()} Djimtech. Expert Coach & Formateur IA.
       </div>
       <div className="flex items-center gap-4">
-        <a href="https://www.youtube.com/@djimtechdjimiadotevi1166" target="_blank" rel="noopener noreferrer"
+        <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
           className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-red-600 transition-colors text-slate-400 hover:text-white">
           <Youtube className="w-4 h-4" />
         </a>
-        <a href="https://www.linkedin.com/in/djimi-adotevi" target="_blank" rel="noopener noreferrer"
+        <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer"
           className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-blue-600 transition-colors text-slate-400 hover:text-white">
           <Linkedin className="w-4 h-4" />
         </a>
-        <a href="https://wa.me/221775218762" target="_blank" rel="noopener noreferrer"
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer"
           className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-green-600 transition-colors text-slate-400 hover:text-white">
           <WhatsAppIcon />
         </a>
@@ -644,7 +659,7 @@ const Footer = ({ openModal }: { openModal: (t: ModalType) => void }) => (
 
 // --- Page Tarifs ---
 
-const pricingAxes = [
+const pricingAxes: PricingAxis[] = [
   {
     id: 'chatbots',
     icon: '🤖',
@@ -777,7 +792,7 @@ const PricingPage = ({ onBack, openModal }: { onBack: () => void; openModal: (t:
                 <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Séances ponctuelles</span>
               </div>
               <div className="flex flex-col gap-2">
-                {(ax as any).hourly?.map((h: { hours: number; price: string }) => (
+                {ax.hourly?.map((h) => (
                   <div key={h.hours} className="flex items-center justify-between">
                     <span className="text-xs text-slate-400 font-medium">{h.hours}h de formation</span>
                     <span className={`text-sm font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${ax.color}`}>{h.price}</span>
@@ -848,7 +863,7 @@ const PricingPage = ({ onBack, openModal }: { onBack: () => void; openModal: (t:
             Réserver mon appel gratuit
           </button>
           <a
-            href="https://wa.me/221775218762"
+            href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-extrabold text-sm border border-green-500/30 text-green-400 hover:bg-green-600 hover:text-white hover:border-green-600 transition-all"
@@ -865,8 +880,9 @@ const PricingPage = ({ onBack, openModal }: { onBack: () => void; openModal: (t:
 export default function App() {
   const [modal, setModal] = useState<ModalType>(null);
   const [page, setPage] = useState<'home' | 'pricing'>('home');
-  const openModal = (type: ModalType) => setModal(type);
-  const closeModal = () => setModal(null);
+  const openModal = React.useCallback((type: ModalType) => setModal(type), []);
+  const closeModal = React.useCallback(() => setModal(null), []);
+  const goToPricing = React.useCallback(() => setPage('pricing'), []);
 
   if (page === 'pricing') {
     return (
@@ -880,14 +896,14 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <ContactModal type={modal} onClose={closeModal} />
-      <Navbar openModal={openModal} onPricing={() => setPage('pricing')} />
-      <Hero openModal={openModal} onPricing={() => setPage('pricing')} />
+      <Navbar openModal={openModal} onPricing={goToPricing} />
+      <Hero openModal={openModal} onPricing={goToPricing} />
       <Philosophy />
       <Path openModal={openModal} />
       <CoachSection />
       <Publics />
       <WhyUs />
-      <FinalCTA openModal={openModal} onPricing={() => setPage('pricing')} />
+      <FinalCTA openModal={openModal} onPricing={goToPricing} />
       <Footer openModal={openModal} />
     </div>
   );
