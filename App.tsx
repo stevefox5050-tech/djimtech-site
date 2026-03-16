@@ -476,6 +476,154 @@ const Path = ({ openModal }: { openModal: (t: ModalType) => void }) => (
   </section>
 );
 
+// --- YouTube Shorts ---
+
+interface YTVideo { id: string; title: string; thumbnail: string; }
+
+const parseDuration = (iso: string): number => {
+  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!m) return 999;
+  return (parseInt(m[1] || '0') * 3600) + (parseInt(m[2] || '0') * 60) + parseInt(m[3] || '0');
+};
+
+const YoutubeShorts = () => {
+  const [videos, setVideos] = useState<YTVideo[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [active, setActive] = useState<string | null>(null);
+
+  useEffect(() => {
+    const key = import.meta.env.VITE_YOUTUBE_API_KEY as string;
+    if (!key) { setError(true); setLoading(false); return; }
+
+    const load = async () => {
+      try {
+        // 1. Get uploads playlist ID
+        const chRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=@djimtechdjimiadotevi1166&key=${key}`
+        );
+        const chData = await chRes.json();
+        const uploadsId = chData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
+        if (!uploadsId) throw new Error('no uploads');
+
+        // 2. Get latest 20 videos
+        const plRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=20&key=${key}`
+        );
+        const plData = await plRes.json();
+        const ids = plData.items?.map((i: any) => i.snippet.resourceId.videoId).join(',');
+        if (!ids) throw new Error('no videos');
+
+        // 3. Filter Shorts (≤ 60s)
+        const vRes = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id=${ids}&key=${key}`
+        );
+        const vData = await vRes.json();
+        const shorts: YTVideo[] = (vData.items || [])
+          .filter((v: any) => parseDuration(v.contentDetails.duration) <= 61)
+          .slice(0, 3)
+          .map((v: any) => ({
+            id: v.id,
+            title: v.snippet.title,
+            thumbnail: v.snippet.thumbnails?.high?.url ?? v.snippet.thumbnails?.medium?.url ?? '',
+          }));
+
+        setVideos(shorts);
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  return (
+    <section className="py-32 px-6 bg-slate-950/20">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card border-white/10 text-red-400 text-xs font-bold uppercase tracking-widest mb-6">
+            <Youtube className="w-3.5 h-3.5" />
+            Shorts YouTube
+          </div>
+          <h2 className="text-4xl md:text-5xl font-black font-outfit mb-4">Vidéos Shorts YouTube Djimtech</h2>
+          <p className="text-slate-400 text-lg font-light">Les derniers contenus IA en moins d'une minute</p>
+        </div>
+
+        {loading && (
+          <div className="flex justify-center items-center py-20">
+            <div className="w-8 h-8 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        {error && !loading && (
+          <div className="text-center py-10 text-slate-500">
+            <p className="mb-4">Impossible de charger les vidéos pour le moment.</p>
+            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all font-bold text-sm">
+              <Youtube className="w-4 h-4" /> Voir la chaîne YouTube
+            </a>
+          </div>
+        )}
+
+        {!loading && !error && videos.length === 0 && (
+          <div className="text-center py-10 text-slate-500">
+            <p className="mb-4">Aucun Short disponible pour le moment.</p>
+            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white transition-all font-bold text-sm">
+              <Youtube className="w-4 h-4" /> Voir la chaîne YouTube
+            </a>
+          </div>
+        )}
+
+        {!loading && videos.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+            {videos.map((v) => (
+              <div key={v.id} className="glass-card rounded-2xl overflow-hidden border-white/10 hover:border-red-500/30 transition-all group">
+                {active === v.id ? (
+                  <div className="relative" style={{ aspectRatio: '9/16' }}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0`}
+                      title={v.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    />
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setActive(v.id)}
+                    className="relative w-full block"
+                    style={{ aspectRatio: '9/16' }}
+                  >
+                    <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-all">
+                      <div className="w-14 h-14 bg-red-600 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                        <svg viewBox="0 0 24 24" fill="white" className="w-6 h-6 ml-1"><path d="M8 5v14l11-7z"/></svg>
+                      </div>
+                    </div>
+                  </button>
+                )}
+                <div className="p-4">
+                  <p className="text-sm font-semibold text-slate-200 line-clamp-2">{v.title}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="text-center mt-10">
+          <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all font-bold text-sm">
+            <Youtube className="w-4 h-4" /> Voir toute la chaîne
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+};
+
 const CoachSection = () => (
   <section id="coach" className="py-32 px-6">
     <div className="max-w-7xl mx-auto">
@@ -901,6 +1049,7 @@ export default function App() {
       <Philosophy />
       <Path openModal={openModal} />
       <CoachSection />
+      <YoutubeShorts />
       <Publics />
       <WhyUs />
       <FinalCTA openModal={openModal} onPricing={goToPricing} />
