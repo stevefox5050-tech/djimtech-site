@@ -476,15 +476,12 @@ const Path = ({ openModal }: { openModal: (t: ModalType) => void }) => (
   </section>
 );
 
-// --- YouTube Shorts ---
+// --- Vidéos IA ---
 
 interface YTVideo { id: string; title: string; thumbnail: string; }
 
-const parseDuration = (iso: string): number => {
-  const m = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-  if (!m) return 999;
-  return (parseInt(m[1] || '0') * 3600) + (parseInt(m[2] || '0') * 60) + parseInt(m[3] || '0');
-};
+const IA_PLAYLIST_ID = 'PLNEzyEjOX3VpJTL50AhcrPhD1u3WWqGxb';
+const IA_PLAYLIST_URL = `https://www.youtube.com/playlist?list=${IA_PLAYLIST_ID}`;
 
 const YoutubeShorts = () => {
   const [videos, setVideos] = useState<YTVideo[]>([]);
@@ -498,37 +495,18 @@ const YoutubeShorts = () => {
 
     const load = async () => {
       try {
-        // 1. Get uploads playlist ID
-        const chRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forHandle=@djimtechdjimiadotevi1166&key=${key}`
-        );
-        const chData = await chRes.json();
-        const uploadsId = chData.items?.[0]?.contentDetails?.relatedPlaylists?.uploads;
-        if (!uploadsId) throw new Error('no uploads');
-
-        // 2. Get latest 20 videos
+        // Fetch latest 3 videos from the "vidéos sur l'IA" playlist
         const plRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${uploadsId}&maxResults=20&key=${key}`
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${IA_PLAYLIST_ID}&maxResults=3&key=${key}`
         );
         const plData = await plRes.json();
-        const ids = plData.items?.map((i: any) => i.snippet.resourceId.videoId).join(',');
-        if (!ids) throw new Error('no videos');
-
-        // 3. Filter Shorts (≤ 60s)
-        const vRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=contentDetails,snippet&id=${ids}&key=${key}`
-        );
-        const vData = await vRes.json();
-        const shorts: YTVideo[] = (vData.items || [])
-          .filter((v: any) => parseDuration(v.contentDetails.duration) <= 61)
-          .slice(0, 3)
-          .map((v: any) => ({
-            id: v.id,
-            title: v.snippet.title,
-            thumbnail: v.snippet.thumbnails?.high?.url ?? v.snippet.thumbnails?.medium?.url ?? '',
-          }));
-
-        setVideos(shorts);
+        const items: YTVideo[] = (plData.items || []).map((i: any) => ({
+          id: i.snippet.resourceId.videoId,
+          title: i.snippet.title,
+          thumbnail: i.snippet.thumbnails?.high?.url ?? i.snippet.thumbnails?.medium?.url ?? '',
+        }));
+        if (!items.length) throw new Error('no videos');
+        setVideos(items);
       } catch {
         setError(true);
       } finally {
@@ -545,10 +523,10 @@ const YoutubeShorts = () => {
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-card border-white/10 text-red-400 text-xs font-bold uppercase tracking-widest mb-6">
             <Youtube className="w-3.5 h-3.5" />
-            Shorts YouTube
+            Playlist YouTube
           </div>
-          <h2 className="text-4xl md:text-5xl font-black font-outfit mb-4">Vidéos Shorts YouTube Djimtech</h2>
-          <p className="text-slate-400 text-lg font-light">Les derniers contenus IA en moins d'une minute</p>
+          <h2 className="text-4xl md:text-5xl font-black font-outfit mb-4">Vidéos sur l'IA</h2>
+          <p className="text-slate-400 text-lg font-light">Les dernières vidéos de ma playlist dédiée à l'intelligence artificielle</p>
         </div>
 
         {loading && (
@@ -560,19 +538,19 @@ const YoutubeShorts = () => {
         {error && !loading && (
           <div className="text-center py-10 text-slate-500">
             <p className="mb-4">Impossible de charger les vidéos pour le moment.</p>
-            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
+            <a href={IA_PLAYLIST_URL} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all font-bold text-sm">
-              <Youtube className="w-4 h-4" /> Voir la chaîne YouTube
+              <Youtube className="w-4 h-4" /> Voir la playlist
             </a>
           </div>
         )}
 
         {!loading && !error && videos.length === 0 && (
           <div className="text-center py-10 text-slate-500">
-            <p className="mb-4">Aucun Short disponible pour le moment.</p>
-            <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
+            <p className="mb-4">Aucune vidéo disponible pour le moment.</p>
+            <a href={IA_PLAYLIST_URL} target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white transition-all font-bold text-sm">
-              <Youtube className="w-4 h-4" /> Voir la chaîne YouTube
+              <Youtube className="w-4 h-4" /> Voir la playlist
             </a>
           </div>
         )}
@@ -582,7 +560,7 @@ const YoutubeShorts = () => {
             {videos.map((v) => (
               <div key={v.id} className="glass-card rounded-2xl overflow-hidden border-white/10 hover:border-red-500/30 transition-all group">
                 {active === v.id ? (
-                  <div className="relative" style={{ aspectRatio: '9/16' }}>
+                  <div className="relative" style={{ aspectRatio: '16/9' }}>
                     <iframe
                       src={`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0`}
                       title={v.title}
@@ -595,7 +573,7 @@ const YoutubeShorts = () => {
                   <button
                     onClick={() => setActive(v.id)}
                     className="relative w-full block"
-                    style={{ aspectRatio: '9/16' }}
+                    style={{ aspectRatio: '16/9' }}
                   >
                     <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-all">
@@ -614,9 +592,9 @@ const YoutubeShorts = () => {
         )}
 
         <div className="text-center mt-10">
-          <a href={YOUTUBE_URL} target="_blank" rel="noopener noreferrer"
+          <a href={IA_PLAYLIST_URL} target="_blank" rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all font-bold text-sm">
-            <Youtube className="w-4 h-4" /> Voir toute la chaîne
+            <Youtube className="w-4 h-4" /> Voir toute la playlist
           </a>
         </div>
       </div>
