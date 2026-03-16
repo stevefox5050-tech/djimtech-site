@@ -560,7 +560,7 @@ const YoutubeShorts = () => {
             {videos.map((v) => (
               <div key={v.id} className="glass-card rounded-2xl overflow-hidden border-white/10 hover:border-red-500/30 transition-all group">
                 {active === v.id ? (
-                  <div className="relative" style={{ aspectRatio: '16/9' }}>
+                  <div className="relative" style={{ aspectRatio: '9/16' }}>
                     <iframe
                       src={`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0`}
                       title={v.title}
@@ -573,7 +573,7 @@ const YoutubeShorts = () => {
                   <button
                     onClick={() => setActive(v.id)}
                     className="relative w-full block"
-                    style={{ aspectRatio: '16/9' }}
+                    style={{ aspectRatio: '9/16' }}
                   >
                     <img src={v.thumbnail} alt={v.title} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/30 transition-all">
