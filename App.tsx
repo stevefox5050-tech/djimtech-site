@@ -495,9 +495,9 @@ const YoutubeShorts = () => {
 
     const load = async () => {
       try {
-        // Fetch latest 3 videos from the "vidéos sur l'IA" playlist
+        // Fetch latest 4 videos from the "vidéos sur l'IA" playlist
         const plRes = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${IA_PLAYLIST_ID}&maxResults=3&key=${key}`
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=${IA_PLAYLIST_ID}&maxResults=4&key=${key}`
         );
         const plData = await plRes.json();
         const items: YTVideo[] = (plData.items || []).map((i: any) => ({
@@ -556,7 +556,7 @@ const YoutubeShorts = () => {
         )}
 
         {!loading && videos.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {videos.map((v) => (
               <div key={v.id} className="glass-card rounded-2xl overflow-hidden border-white/10 hover:border-red-500/30 transition-all group">
                 {active === v.id ? (
@@ -824,11 +824,11 @@ const pricingAxes: PricingAxis[] = [
     color: 'from-purple-500 to-pink-500',
     border: 'border-purple-500/30',
     glow: 'bg-purple-500/5',
-    individual: '50 000 – 80 000 FCFA',
-    group: '150 000 FCFA',
+    individual: '80 000 – 120 000 FCFA',
+    group: '250 000 FCFA',
     hourly: [
-      { hours: 2, price: '20 000 FCFA' },
-      { hours: 3, price: '25 000 FCFA' },
+      { hours: 2, price: '30 000 FCFA' },
+      { hours: 3, price: '35 000 FCFA' },
     ],
     description: 'Vibe Coding, Vibe Prospecting, Vibe Editing, Vibe Marketing, Vibe Agents — créer sans coder avec l\'IA.',
   },
@@ -893,7 +893,7 @@ const PricingPage = ({ onBack, openModal }: { onBack: () => void; openModal: (t:
             <div className="mb-4 p-4 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4 text-slate-400" />
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Individuel / mois</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Individuel / mois · 2h/sem.</span>
               </div>
               <div className={`text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${ax.color}`}>
                 {ax.individual}
@@ -904,7 +904,7 @@ const PricingPage = ({ onBack, openModal }: { onBack: () => void; openModal: (t:
             <div className="mb-4 p-4 rounded-xl bg-white/5 border border-white/10">
               <div className="flex items-center gap-2 mb-1">
                 <GraduationCap className="w-4 h-4 text-slate-400" />
-                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Groupe 5 pers. / mois</span>
+                <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Groupe 5 pers. / mois · 2h/sem.</span>
               </div>
               <div className={`text-xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${ax.color}`}>
                 {ax.group}
@@ -1008,7 +1008,7 @@ export default function App() {
   const [page, setPage] = useState<'home' | 'pricing'>('home');
   const openModal = React.useCallback((type: ModalType) => setModal(type), []);
   const closeModal = React.useCallback(() => setModal(null), []);
-  const goToPricing = React.useCallback(() => setPage('pricing'), []);
+  const goToPricing = React.useCallback(() => { setPage('pricing'); window.scrollTo(0, 0); }, []);
 
   if (page === 'pricing') {
     return (
